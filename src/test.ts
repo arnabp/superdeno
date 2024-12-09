@@ -47,7 +47,6 @@ type Parser = (str: string) => any;
 type MultipartValueSingle =
   | Blob
   | Uint8Array
-  | Deno.Reader
   | string
   | boolean
   | number;
@@ -189,7 +188,7 @@ exposeSham(SHAM_SYMBOL);
 async function completeXhrPromises() {
   for (
     const promise of Object.values(
-      (window as any)[SHAM_SYMBOL].promises,
+      (globalThis as any)[SHAM_SYMBOL].promises,
     )
   ) {
     if (promise) {
@@ -221,7 +220,7 @@ export class Test extends SuperRequest {
   #urlSetupPromise: Promise<void>;
 
   public app: string | ListenerLike | ServerLike;
-  public url!: string;
+  public override url!: string;
 
   constructor(
     app: string | ListenerLike | ServerLike,
@@ -536,7 +535,7 @@ export class Test extends SuperRequest {
    * @returns {Test} for chaining
    * @public
    */
-  end(callback?: CallbackHandler): this {
+  override end(callback?: CallbackHandler): this {
     Promise.allSettled([this.#serverSetupPromise, this.#urlSetupPromise]).then(
       () => {
         const self = this;
